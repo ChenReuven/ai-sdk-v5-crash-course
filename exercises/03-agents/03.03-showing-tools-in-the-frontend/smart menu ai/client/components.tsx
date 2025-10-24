@@ -38,7 +38,6 @@ export const Message = ({
         <ReactMarkdown>{prefix + text}</ReactMarkdown>
       </div>
       {parts.map((part, index) => {
-        console.log(part);
         if (part.type === 'tool-getRandomMeal') {
           return (
             <div
