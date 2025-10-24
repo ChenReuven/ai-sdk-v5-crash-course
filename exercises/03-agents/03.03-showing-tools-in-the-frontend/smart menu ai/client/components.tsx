@@ -92,6 +92,42 @@ export const Message = ({
             </div>
           );
         }
+        if (part.type === 'tool-lookupMealById') {
+          return (
+            <div
+              key={index}
+              className="bg-green-900/20 border border-green-700 rounded p-3 text-sm"
+            >
+              <div className="font-semibold text-green-300 mb-1">
+                📖 Lookup meal by ID
+              </div>
+              <div className="text-green-200">
+                ID: {part.input?.id || 'Unknown'}
+              </div>
+            </div>
+          );
+        }
+        if (part.type === 'tool-searchMealByName') {
+          return (
+            <div
+              key={index}
+              className="bg-yellow-900/20 border border-yellow-700 rounded p-3 text-sm"
+            >
+              <div className="font-semibold text-yellow-300 mb-1">
+                📖 Search meal by name
+              </div>
+              <div className="text-yellow-200">
+                Name: {part.input?.name || 'Unknown'}
+              </div>
+              <div className="text-yellow-200">
+                Meals:{' '}
+                {part.output?.meals
+                  .map((meal) => meal.meal)
+                  .join(', ') || 'Unknown'}
+              </div>
+            </div>
+          );
+        }
         return null;
       })}
     </div>
