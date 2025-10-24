@@ -35,6 +35,7 @@ export const Message = ({
         <ReactMarkdown>{prefix + text}</ReactMarkdown>
       </div>
       {parts.map((part, index) => {
+        console.log(part);
         if (part.type === 'tool-getRandomMeal') {
           return (
             <div
@@ -45,7 +46,46 @@ export const Message = ({
                 📝 Get a random meal
               </div>
               <div className="text-blue-200">
-                Meal: {part.input?.meal || 'Unknown'}
+                Meal: {part.output?.meal || 'Unknown'}
+              </div>
+              <div>
+                <img
+                  src={part.output?.image ?? 'Unknown'}
+                  alt={part.output?.meal || 'Unknown'}
+                  className="w-1/2 h-auto"
+                />
+                {part.output?.video && (
+                  <div className="mt-2">
+                    <div className="font-semibold text-blue-300 mb-1">
+                      🎥 וידאו הכנה:
+                    </div>
+                    <iframe
+                      width="100%"
+                      height="250"
+                      src={
+                        part.output.video.includes(
+                          'youtube.com/watch',
+                        )
+                          ? part.output.video.replace(
+                              'youtube.com/watch?v=',
+                              'youtube.com/embed/',
+                            )
+                          : part.output.video.includes(
+                                'youtu.be',
+                              )
+                            ? part.output.video.replace(
+                                'youtu.be/',
+                                'youtube.com/embed/',
+                              )
+                            : `https://www.youtube.com/embed/${part.output.video}`
+                      }
+                      title="YouTube video player"
+                      frameBorder="0"
+                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                      allowFullScreen
+                    />
+                  </div>
+                )}
               </div>
             </div>
           );

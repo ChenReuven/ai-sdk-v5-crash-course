@@ -9,6 +9,14 @@ import {
 } from 'ai';
 import { z } from 'zod';
 
+export type GetRandomMealOutput = {
+  meal: string;
+  instructions: string;
+  ingredients: string[];
+  image: string;
+  video: string;
+};
+
 export type MyUIMessage = UIMessage<
   never,
   never,
@@ -20,10 +28,35 @@ const tools = {
   getRandomMeal: tool({
     description: 'Get a random meal recipe from TheMealDB.',
     inputSchema: z.object({}),
-    execute: async () => {
+    outputSchema: z.object({
+      meal: z.string().describe('The name of the meal'),
+      instructions: z.string().describe('The instructions to make the meal'),
+      ingredients: z.array(z.string()).describe('The ingredients to make the meal from strIngredients'),
+      image: z.string().describe('The image of the meal from strMealThumb'),
+      video: z.string().describe('The video of the meal from strYoutube, if it exists'),
+    }),
+    execute: async (): Promise<GetRandomMealOutput> => {
       const response = await fetch('https://www.themealdb.com/api/json/v1/1/random.php');
       const data = await response.json();
-      return data.meals[0];
+      const meal = data.meals[0];
+      
+      // Extract ingredients from strIngredient1-20 properties
+      const ingredients: string[] = [];
+      for (let i = 1; i <= 20; i++) {
+        const ingredient = meal[`strIngredient${i}`];
+        const measure = meal[`strMeasure${i}`];
+        if (ingredient && ingredient.trim()) {
+          ingredients.push(`${measure ? measure.trim() + ' ' : ''}${ingredient.trim()}`);
+        }
+      }
+      
+      return {
+        meal: meal.strMeal,
+        instructions: meal.strInstructions,
+        ingredients: ingredients,
+        image: meal.strMealThumb,
+        video: meal.strYoutube || '',
+      };
     },
   }),
 
