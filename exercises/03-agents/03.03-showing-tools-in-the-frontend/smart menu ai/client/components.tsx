@@ -6,7 +6,10 @@ export const Wrapper = (props: {
   children: React.ReactNode;
 }) => {
   return (
-    <div className="flex flex-col w-full max-w-md py-24 mx-auto stretch">
+    <div
+      className="flex flex-col w-full max-w-md py-24 mx-auto stretch"
+      dir="rtl"
+    >
       {props.children}
     </div>
   );
@@ -31,7 +34,7 @@ export const Message = ({
     .join('');
   return (
     <div className="flex flex-col gap-2">
-      <div className="prose prose-invert my-6">
+      <div className="prose prose-invert my-6 text-right">
         <ReactMarkdown>{prefix + text}</ReactMarkdown>
       </div>
       {parts.map((part, index) => {
@@ -40,7 +43,7 @@ export const Message = ({
           return (
             <div
               key={index}
-              className="bg-blue-900/20 border border-blue-700 rounded p-3 text-sm"
+              className="bg-blue-900/20 border border-blue-700 rounded p-3 text-sm text-right"
             >
               <div className="font-semibold text-blue-300 mb-1">
                 📝 Get a random meal
@@ -52,7 +55,7 @@ export const Message = ({
                 <img
                   src={part.output?.image ?? 'Unknown'}
                   alt={part.output?.meal || 'Unknown'}
-                  className="w-1/2 h-auto"
+                  className="w-full h-auto"
                 />
                 {part.output?.video && (
                   <div className="mt-2">
@@ -61,7 +64,7 @@ export const Message = ({
                     </div>
                     <iframe
                       width="100%"
-                      height="250"
+                      height="300"
                       src={
                         part.output.video.includes(
                           'youtube.com/watch',
@@ -109,7 +112,7 @@ export const ChatInput = ({
 }) => (
   <form onSubmit={onSubmit}>
     <input
-      className={`fixed bottom-0 w-full max-w-md p-2 mb-8 border-2 border-zinc-700 rounded shadow-xl bg-gray-800 ${
+      className={`fixed bottom-0 w-full max-w-md p-2 mb-8 border-2 border-zinc-700 rounded shadow-xl bg-gray-800 text-right ${
         disabled ? 'opacity-50 cursor-not-allowed' : ''
       }`}
       value={input}

@@ -14,6 +14,14 @@ const App = () => {
 
   return (
     <Wrapper>
+      <div className="text-center mb-8" dir="rtl">
+        <h1 className="text-4xl font-bold text-white mb-2">
+          🍽️ Smart Menu AI
+        </h1>
+        <p className="text-lg text-gray-300">
+          גלה את המנה המושלמת שלך עם המלצות מבוססות בינה מלאכותית
+        </p>
+      </div>
       {messages.map((message) => (
         <Message
           key={message.id}
