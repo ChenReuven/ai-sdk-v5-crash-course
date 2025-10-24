@@ -134,6 +134,60 @@ export const Message = ({
   );
 };
 
+export const MealGallery = ({
+  meals,
+  onMealClick,
+  onSkip,
+}: {
+  meals: Array<{
+    meal: string;
+    image: string;
+  }>;
+  onMealClick: (mealName: string) => void;
+  onSkip: () => void;
+}) => {
+  return (
+    <div className="mb-8" dir="rtl">
+      <div className="text-center mb-6">
+        <h2 className="text-2xl font-bold text-white mb-2">
+          🍽️ בחר מנה מהתפריט שלנו
+        </h2>
+        <p className="text-gray-300">
+          לחץ על מנה לקבלת פרטים נוספים או התחל שיחה רגילה
+        </p>
+      </div>
+
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
+        {meals.map((meal, index) => (
+          <div
+            key={index}
+            className="bg-gray-800 border border-gray-700 rounded-lg p-4 cursor-pointer hover:bg-gray-700 transition-colors"
+            onClick={() => onMealClick(meal.meal)}
+          >
+            <img
+              src={meal.image}
+              alt={meal.meal}
+              className="w-full h-32 object-cover rounded mb-3"
+            />
+            <h3 className="text-white font-semibold text-center text-sm">
+              {meal.meal}
+            </h3>
+          </div>
+        ))}
+      </div>
+
+      <div className="text-center">
+        <button
+          onClick={onSkip}
+          className="bg-gray-600 hover:bg-gray-500 text-white px-6 py-2 rounded-lg transition-colors"
+        >
+          התחל שיחה רגילה
+        </button>
+      </div>
+    </div>
+  );
+};
+
 export const ChatInput = ({
   input,
   onChange,
