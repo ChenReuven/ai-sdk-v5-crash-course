@@ -17,6 +17,8 @@ export type GetRandomMealOutput = {
   video: string;
 };
 
+export type SearchMealOutput = GetRandomMealOutput[];
+
 export type MyUIMessage = UIMessage<
   never,
   never,
@@ -60,6 +62,52 @@ const tools = {
     },
   }),
 
+  searchMealByName: tool({
+    description: 'Search for meals by name from TheMealDB.',
+    inputSchema: z.object({
+      name: z.string().describe('The name of the meal to search for'),
+    }),
+    outputSchema: z.object({
+      meals: z.array(z.object({
+        meal: z.string().describe('The name of the meal'),
+        instructions: z.string().describe('The instructions to make the meal'),
+        ingredients: z.array(z.string()).describe('The ingredients to make the meal'),
+        image: z.string().describe('The image of the meal'),
+        video: z.string().describe('The video of the meal, if it exists'),
+      })).describe('Array of matching meals'),
+    }),
+    execute: async ({ name }): Promise<{ meals: GetRandomMealOutput[] }> => {
+      const response = await fetch(`https://www.themealdb.com/api/json/v1/1/search.php?s=${encodeURIComponent(name)}`);
+      const data = await response.json();
+      
+      if (!data.meals) {
+        return { meals: [] };
+      }
+      
+      const meals: GetRandomMealOutput[] = data.meals.map((meal: any) => {
+        // Extract ingredients from strIngredient1-20 properties
+        const ingredients: string[] = [];
+        for (let i = 1; i <= 20; i++) {
+          const ingredient = meal[`strIngredient${i}`];
+          const measure = meal[`strMeasure${i}`];
+          if (ingredient && ingredient.trim()) {
+            ingredients.push(`${measure ? measure.trim() + ' ' : ''}${ingredient.trim()}`);
+          }
+        }
+        
+        return {
+          meal: meal.strMeal,
+          instructions: meal.strInstructions,
+          ingredients: ingredients,
+          image: meal.strMealThumb,
+          video: meal.strYoutube || '',
+        };
+      });
+      
+      return { meals };
+    },
+  }),
+
 };
 
 export const POST = async (req: Request): Promise<Response> => {
@@ -74,7 +122,10 @@ export const POST = async (req: Request): Promise<Response> => {
       You can recommend random meal recipes from TheMealDB.
 
       Use these tools to assist the user to choose a meal from the menu:
-      - getRandomMeal
+      - getRandomMeal: Get a random meal recipe
+      - searchMealByName: Search for meals by name
+
+      When searchMealByName returns no results, suggest alternative meals or use getRandomMeal to recommend something similar.
 
       You MUST ANSWER ALL THE USER'S QUESTIONS IN HEBREW.
 
