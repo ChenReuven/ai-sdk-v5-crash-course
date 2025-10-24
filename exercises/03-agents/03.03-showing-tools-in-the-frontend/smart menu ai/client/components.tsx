@@ -142,6 +142,7 @@ export const MealGallery = ({
   meals: Array<{
     meal: string;
     image: string;
+    category?: string;
   }>;
   onMealClick: (mealName: string) => void;
   onSkip: () => void;
@@ -169,9 +170,16 @@ export const MealGallery = ({
               alt={meal.meal}
               className="w-full h-32 object-cover rounded mb-3"
             />
-            <h3 className="text-white font-semibold text-center text-sm">
-              {meal.meal}
-            </h3>
+            <div className="text-center">
+              <h3 className="text-white font-semibold text-sm mb-1">
+                {meal.meal}
+              </h3>
+              {meal.category && (
+                <span className="text-xs text-gray-400 bg-gray-700 px-2 py-1 rounded">
+                  {meal.category}
+                </span>
+              )}
+            </div>
           </div>
         ))}
       </div>

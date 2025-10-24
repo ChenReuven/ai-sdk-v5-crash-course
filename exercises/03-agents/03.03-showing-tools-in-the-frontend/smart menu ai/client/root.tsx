@@ -21,6 +21,7 @@ const App = () => {
     Array<{
       meal: string;
       image: string;
+      category?: string;
     }>
   >([]);
 
@@ -30,19 +31,64 @@ const App = () => {
   useEffect(() => {
     const fetchInitialMeals = async () => {
       try {
-        const mealPromises = Array.from({ length: 10 }, () =>
+        // Define categories to get variety
+        const categories = [
+          'Beef',
+          'Chicken',
+          'Seafood',
+          'Vegetarian',
+          'Dessert',
+          'Pasta',
+          'Pork',
+          'Lamb',
+          'Breakfast',
+          'Side',
+        ];
+
+        // Category translations to Hebrew
+        const categoryTranslations: Record<string, string> = {
+          Beef: 'בשר בקר',
+          Chicken: 'עוף',
+          Seafood: 'מאכלי ים',
+          Vegetarian: 'צמחוני',
+          Dessert: 'קינוח',
+          Pasta: 'פסטה',
+          Pork: 'חזיר',
+          Lamb: 'כבש',
+          Breakfast: 'ארוחת בוקר',
+          Side: 'תוספת',
+        };
+
+        const mealPromises = categories.map((category) =>
           fetch(
-            'https://www.themealdb.com/api/json/v1/1/random.php',
+            `https://www.themealdb.com/api/json/v1/1/filter.php?c=${encodeURIComponent(category)}`,
           )
             .then((res) => res.json())
-            .then((data) => ({
-              meal: data.meals[0].strMeal,
-              image: data.meals[0].strMealThumb,
-            })),
+            .then((data) => {
+              if (data.meals && data.meals.length > 0) {
+                // Get a random meal from this category
+                const randomIndex = Math.floor(
+                  Math.random() * data.meals.length,
+                );
+                const meal = data.meals[randomIndex];
+                return {
+                  meal: meal.strMeal,
+                  image: meal.strMealThumb,
+                  category:
+                    categoryTranslations[category] || category,
+                };
+              }
+              return null;
+            })
+            .catch(() => null),
         );
 
         const meals = await Promise.all(mealPromises);
-        setInitialMeals(meals);
+        // Filter out any failed requests and limit to 10
+        const validMeals = meals
+          .filter((meal) => meal !== null)
+          .slice(0, 10);
+        setInitialMeals(validMeals);
       } catch (error) {
         console.error('Failed to fetch initial meals:', error);
       }
